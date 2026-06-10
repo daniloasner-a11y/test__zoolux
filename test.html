@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Практичний тест — рентген-лаборант Zoolux</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:system-ui,sans-serif;background:#f5f5f0;color:#1a1a1a;min-height:100vh;padding:1.5rem 1rem}
+.wrap{max-width:720px;margin:0 auto}
+h1{font-size:20px;font-weight:600;margin-bottom:4px}
+.subtitle{font-size:13px;color:#666;margin-bottom:1.25rem}
+.topbar{display:flex;gap:10px;align-items:center;margin-bottom:1rem}
+.pbar{flex:1;height:5px;background:#ddd;border-radius:3px;overflow:hidden}
+.pfill{height:100%;background:#0F6E56;border-radius:3px;transition:width .3s}
+.qlbl{font-size:12px;color:#888;white-space:nowrap}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:1rem}
+.sc{background:#fff;border-radius:8px;padding:.6rem .75rem;text-align:center;border:1px solid #e8e8e8}
+.sn{font-size:20px;font-weight:600}
+.sl{font-size:11px;color:#888;margin-top:1px}
+.card{background:#fff;border:1px solid #e8e8e8;border-radius:12px;padding:1.25rem}
+.qmeta{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:.75rem}
+.tag{font-size:11px;padding:3px 9px;border-radius:4px;background:#f0f0ec;color:#555;border:1px solid #e0e0d8}
+.tag.pract{background:#e1f5ee;color:#085041;border-color:#5dcaa5}
+.tag.warn{background:#faeeda;color:#633806;border-color:#ef9f27}
+.tag.err{background:#faece7;color:#4a1b0c;border-color:#d85a30}
+.sit{background:#f7f7f4;border-left:3px solid #1D9E75;border-radius:0 8px 8px 0;padding:.75rem 1rem;margin-bottom:.875rem;font-size:13px;color:#555;line-height:1.55}
+.sit strong{display:block;font-weight:600;margin-bottom:3px;font-size:11px;text-transform:uppercase;letter-spacing:.4px;color:#333}
+.qtext{font-size:15px;font-weight:600;color:#1a1a1a;line-height:1.5;margin-bottom:1rem}
+.opts{display:flex;flex-direction:column;gap:7px}
+.ob{width:100%;text-align:left;background:#f7f7f4;border:1px solid #ddd;border-radius:8px;padding:.7rem 1rem;font-size:14px;color:#1a1a1a;cursor:pointer;display:flex;align-items:flex-start;gap:10px;transition:background .12s;line-height:1.4}
+.ob:hover:not(:disabled){background:#eeeeea;border-color:#bbb}
+.ob.ok{background:#eaf3de;border-color:#3B6D11;color:#27500A}
+.ob.bad{background:#fcebeb;border-color:#A32D2D;color:#791F1F}
+.ol{font-weight:600;min-width:18px;color:#999;font-size:13px}
+.fb{margin-top:.875rem;padding:.75rem 1rem;border-radius:8px;font-size:13px;line-height:1.55;display:none}
+.fb.show{display:block}
+.fb.ok-fb{background:#eaf3de;color:#27500A;border:1px solid #97C459}
+.fb.bad-fb{background:#fcebeb;color:#791F1F;border:1px solid #F09595}
+.navrow{display:flex;justify-content:flex-end;margin-top:1rem}
+.nbtn{background:#1D9E75;border:none;border-radius:8px;padding:.55rem 1.4rem;font-size:14px;cursor:pointer;color:#fff;display:none}
+.nbtn:hover{background:#0F6E56}
+.start-screen{background:#fff;border:1px solid #e8e8e8;border-radius:12px;padding:2rem 1.5rem;text-align:center}
+.start-screen h2{font-size:17px;font-weight:600;margin-bottom:.5rem}
+.start-screen p{font-size:13px;color:#666;margin-bottom:1.5rem;line-height:1.5}
+.name-label{display:block;font-size:13px;font-weight:600;color:#333;text-align:left;margin-bottom:.4rem}
+.name-input{width:100%;border:1px solid #ddd;border-radius:8px;padding:.65rem 1rem;font-size:15px;outline:none;margin-bottom:1rem}
+.name-input:focus{border-color:#1D9E75;box-shadow:0 0 0 2px rgba(29,158,117,.15)}
+.start-btn{background:#1D9E75;border:none;border-radius:8px;padding:.65rem 2rem;font-size:15px;font-weight:600;cursor:pointer;color:#fff;width:100%}
+.start-btn:hover{background:#0F6E56}
+.start-btn:disabled{background:#aaa;cursor:not-allowed}
+.res{display:none;padding:1rem 0}
+.res.show{display:block}
+.rcircle{width:110px;height:110px;border-radius:50%;margin:0 auto 1.25rem;display:flex;flex-direction:column;align-items:center;justify-content:center;border:3px solid #1D9E75}
+.rpct{font-size:28px;font-weight:700;color:#0F6E56}
+.rlbl{font-size:12px;color:#27500A}
+.rtitle{font-size:18px;font-weight:600;text-align:center;margin-bottom:.4rem}
+.rsub{font-size:13px;color:#666;text-align:center;margin-bottom:1.25rem}
+.rbk{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:1.25rem}
+.rbc{background:#f7f7f4;border-radius:8px;padding:.75rem;text-align:center}
+.rbn{font-size:20px;font-weight:700}
+.rbn.g{color:#0F6E56}.rbn.r{color:#A32D2D}.rbn.a{color:#BA7517}
+.rbl{font-size:11px;color:#888;margin-top:2px}
+.send-status{text-align:center;font-size:13px;padding:.6rem 1rem;border-radius:8px;margin-bottom:1rem}
+.send-status.sending{background:#faeeda;color:#633806}
+.send-status.sent{background:#eaf3de;color:#27500A}
+.send-status.failed{background:#fcebeb;color:#791F1F}
+.rstart{background:#f0f0ec;border:1px solid #ddd;border-radius:8px;padding:.55rem 1.25rem;font-size:14px;cursor:pointer;display:block;margin:0 auto 1.5rem}
+.rstart:hover{background:#e8e8e4}
+.rvlist{text-align:left}
+.rvhdr{font-size:14px;font-weight:600;margin-bottom:.75rem}
+.rvi{padding:.75rem 0;border-bottom:1px solid #eee}
+.rvi:last-child{border-bottom:none}
+.rvq{font-size:13px;color:#555;margin-bottom:4px;line-height:1.4}
+.rva{font-size:13px;line-height:1.4}
+.rva.g{color:#0F6E56}.rva.r{color:#A32D2D}
+.rvca{font-size:12px;color:#0F6E56;margin-top:3px}
+.rvex{font-size:12px;color:#666;margin-top:4px;line-height:1.4}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<div id="startScreen">
+  <h1>Практичний тест — рентген-лаборант</h1>
+  <p class="subtitle">Ситуаційні завдання: укладання, параметри, безпека, протоколи · Zoolux 2026</p>
+  <div class="start-screen">
+    <h2>Введіть ваше ім'я перед початком</h2>
+    <p>Після завершення тесту ваш результат буде автоматично збережено у таблиці викладача.</p>
+    <label class="name-label" for="nameInput">Ім'я та прізвище</label>
+    <input class="name-input" id="nameInput" type="text" placeholder="Наприклад: Марія Коваль" maxlength="60" oninput="checkName()">
+    <button class="start-btn" id="startBtn" onclick="startQuiz()" disabled>Почати тест →</button>
+  </div>
+</div>
+
+<div id="qmain" style="display:none">
+  <div style="display:flex;align-items:center;gap:10px;margin-bottom:.5rem">
+    <span style="font-size:13px;color:#666">Студент:</span>
+    <span style="font-size:13px;font-weight:600" id="nameDisplay"></span>
+  </div>
+  <div class="topbar">
+    <div class="pbar"><div class="pfill" id="pfill" style="width:0%"></div></div>
+    <div class="qlbl" id="qlbl">1 / 35</div>
+  </div>
+  <div class="stats">
+    <div class="sc"><div class="sn" id="stot">0</div><div class="sl">відповіді</div></div>
+    <div class="sc"><div class="sn" id="sok" style="color:#0F6E56">0</div><div class="sl">правильно</div></div>
+    <div class="sc"><div class="sn" id="sbad" style="color:#A32D2D">0</div><div class="sl">помилки</div></div>
+  </div>
+  <div class="card">
+    <div class="qmeta" id="qmeta"></div>
+    <div id="sit"></div>
+    <div class="qtext" id="qtxt"></div>
+    <div class="opts" id="opts"></div>
+    <div class="fb" id="fb"></div>
+    <div class="navrow"><button class="nbtn" id="nbtn" onclick="nextQ()">Далі →</button></div>
+  </div>
+</div>
+
+<div class="res" id="res">
+  <div class="rcircle"><div class="rpct" id="rpct">0%</div><div class="rlbl">результат</div></div>
+  <div class="rtitle" id="rtitle"></div>
+  <div class="rsub" id="rsub"></div>
+  <div class="rbk">
+    <div class="rbc"><div class="rbn g" id="rok">0</div><div class="rbl">правильно</div></div>
+    <div class="rbc"><div class="rbn r" id="rbad">0</div><div class="rbl">помилки</div></div>
+    <div class="rbc"><div class="rbn a" id="rtot">35</div><div class="rbl">питань</div></div>
+  </div>
+  <div class="send-status sending" id="sendStatus">⏳ Зберігаємо результат...</div>
+  <button class="rstart" onclick="restart()">↺ Пройти знову</button>
+  <div class="rvlist" id="rvlist"></div>
+</div>
+</div>
+
+<script>
+const SCRIPT_URL = "ВСТАВТЕ_ПОСИЛАННЯ_ВАШ_SCRIPT_URL_ТУТ";
+
+// ans: індекс правильної відповіді (0=А, 1=Б, 2=В, 3=Г)
+// Правильні відповіді рівномірно розподілені: А=9, Б=9, В=9, Г=8
+const QS=[
+  // --- А (0) правильна ---
+  {cat:"Укладання",type:"pract",sit:"Пряма (краніокаудальна) проекція колінного суглоба. Оцінюєте якість знімка.",
+   q:"Який показник рівної прямої проекції коліна?",
+   opts:["Надколінник по центру стегнової кістки","Колінний суглоб у центрі кадру","Чітко видно обидві сесамоподібні кістки","Гомілкова і малогомілкова кістки не накладаються"],
+   ans:0,exp:"Рівна пряма проекція коліна: надколінник по центру стегнової кістки (окрім патологій вивиху), сесамоподібні кістки наполовину на кістці, надвиростки рівномірні."},
+
+  {cat:"Параметри",type:"err",sit:"Знімок грудної клітки вийшов занадто ТЕМНИМ — структури майже не видно, все чорне.",
+   q:"Як називається цей дефект і що треба змінити?",
+   opts:["Пересвічений (overexposed) — зменшити kV або mAs","Недосвічений (underexposed) — збільшити kV або mAs","Артефакт руху — зменшити час експозиції","Норма — пацієнт має пневмоторакс"],
+   ans:0,exp:"Темний знімок = пересвічений (overexposed) — надто багато дози. Треба ЗМЕНШИТИ kV або mAs. Запам'ятайте: темний = пересвічений, світлий = недосвічений."},
+
+  {cat:"Укладання",type:"pract",sit:"Рентген плечолопаткового суглоба, права лапа — зона інтересу. Бокова проекція.",
+   q:"Як правильно укласти пацієнта?",
+   opts:["На праву лапу (хвору), ліву відводите максимально назад, голову відхиляєте вгору","На ліву лапу (здорову), хворий суглоб зверху","На спину, обидві лапи вперед","Вертикально, промінь горизонтально"],
+   ans:0,exp:"Бокова проекція: укладання на стороні зони інтересу (хвора лапа знизу). Іншу кінцівку максимально назад, голову вгору. Суглоб строго по центру з чіткою колімацією."},
+
+  {cat:"Документація",type:"pract",sit:"Зроблено 3 успішних знімки. Вносите в Єноті.",
+   q:"Скільки одиниць 'проведення знімку' вносите?",
+   opts:["3 — кількість успішних знімків","1 — незалежно від кількості","5 — із запасом","Стільки скільки зробили включно з невдалими"],
+   ans:0,exp:"У чек вносяться ЛИШЕ успішні знімки, що будуть внесені в Єнот. Поле 'доза' = кількість успішних знімків. Невдалі (брак) не вносяться."},
+
+  {cat:"КТ контраст",type:"pract",sit:"Собака 20 кг, КТ з контрастом. Заповнюєте інжектор Medrad.",
+   q:"Скільки контрасту (колба А) і фізрозчину (колба Б) готуєте?",
+   opts:["Контраст 40 мл, фізрозчин 20 мл","Контраст 20 мл, фізрозчин 10 мл","Контраст 10 мл, фізрозчин 20 мл","Контраст 60 мл, фізрозчин 30 мл"],
+   ans:0,exp:"Контраст = 2 мл/кг × 20 = 40 мл. Фізрозчин = 1 мл/кг × 20 = 20 мл. Для пацієнтів < 10 кг мінімальний фізрозчин — 10 мл."},
+
+  {cat:"Якість",type:"pract",sit:"Лікар каже: 'Знімок на видиху — легені не оцінити'.",
+   q:"Чому важливо робити знімок грудної клітки на вдиху?",
+   opts:["На вдиху легені наповнені повітрям — патології видно значно краще","На вдиху серце краще видно","На вдиху менша доза опромінення","На вдиху тварина не рухається"],
+   ans:0,exp:"На вдиху легені максимально наповнені повітрям — це дозволяє оцінити легеневий малюнок, вогнищеві зміни, плевральну рідину. Знімок на видиху суттєво знижує діагностичну цінність."},
+
+  {cat:"МРТ безпека",type:"err",sit:"Укладаєте пацієнта у котушку МРТ і бачите металеву кнопку на халаті.",
+   q:"Що робите?",
+   opts:["Знімаєте халат з металевою кнопкою до входу у зону МРТ","Нічого — кнопка невелика","Відходите якнайдалі від апарату","Вимикаєте МРТ"],
+   ans:0,exp:"Будь-які металеві предмети — кнопки, ключі, телефон, монети — заборонено вносити у зону МРТ. Феромагнітні предмети стають снарядами у полі магніту."},
+
+  {cat:"Контрастна Rx",type:"warn",sit:"Ввели барій. Через 15-30 хвилин робите серію знімків.",
+   q:"Який ДОДАТКОВИЙ знімок обов'язково робите і навіщо?",
+   opts:["Боковий знімок ЛЕГЕНЬ — виключити аспірацію контрасту","Додатковий знімок живота — для перевірки просування","Знімок голови для контролю стану","Нічого додаткового — барій безпечний"],
+   ans:0,exp:"Через 15-30 хв після введення барію ОБОВ'ЯЗКОВО роблять боковий знімок легень — виключити аспіраційну пневмонію. Такий само знімок роблять і наприкінці всього дослідження."},
+
+  {cat:"Безпека персоналу",type:"warn",sit:"Власник питає: 'Моя вагітна дружина може побути з твариною під час рентгену?'",
+   q:"Які питання щодо протипоказань обов'язково ставите перед допуском?",
+   opts:["Питаємо: онкологія, захворювання щитоподібної залози, лактація, вагітність — за наявності не допускаємо без захисту або взагалі","Нікому не можна бути присутнім","Вагітним можна — рентген людям не шкодить","Просто даємо халат і все"],
+   ans:0,exp:"Перед допуском обов'язково: онкологія, щитоподібна залоза, лактація, вагітність. За наявності цих факторів — не допускаємо або максимальний захист. Завжди одягаємо захист усім присутнім."},
+
+  // --- Б (1) правильна ---
+  {cat:"Укладання",type:"pract",sit:"Пацієнт: кіт 4 кг, підозра на новоутворення в грудній клітці. Лікар призначив онкологічний скринінг.",
+   q:"Скільки знімків і яких проекцій ви зробите?",
+   opts:["2 знімки: 1 латеральна + 1 VD","3 знімки: 2 латеральні (ліве і праве) + 1 пряма","4 знімки: 2 латеральні + VD + DV","1 знімок — найкраща латеральна"],
+   ans:1,exp:"Онкоскринінг — завжди 3 проекції: обидва бокових положення (R та L) + одна пряма. Щоб не пропустити вогнища за серцем або куполом діафрагми."},
+
+  {cat:"Параметри",type:"pract",sit:"Робите знімок черевної порожнини. Потрібно вибрати налаштування.",
+   q:"Яке правило налаштувань для черевної порожнини?",
+   opts:["Багато kV + мало mAs","Мало kV + багато mAs","Середній kV + середній mAs","Максимальний kV + мінімальний mAs"],
+   ans:1,exp:"Черевна порожнина — мало kV + багато mAs. Грудна порожнина — багато kV + мало mAs. Кістки — ще менше kV + ще більше mAs. Загальне правило: завжди багато mA!"},
+
+  {cat:"Укладання",type:"pract",sit:"Бокова проекція ліктьового суглоба. Лікар каже: проекція нерівна.",
+   q:"Який показник рівної бокової проекції ліктя?",
+   opts:["Ліктьовий суглоб у центрі знімка","Латеральний та медіальний виростки накладаються один на одного","Лапа максимально витягнута","Видно всі кістки передпліччя"],
+   ans:1,exp:"Рівна бокова проекція ліктя: латеральний та медіальний виростки накладаються один на одного. Роблять у ЗІГНУТОМУ ліктьовому суглобі. Тварину кладуть на лапу зони інтересу."},
+
+  {cat:"КТ контраст",type:"warn",sit:"Під час введення контрасту помітили набряк тканин навколо катетера.",
+   q:"Ваші дії?",
+   opts:["Продовжуєте — трохи просочилось, нічого страшного","Негайно зупиняєте інжектор, кличете лікаря","Зменшуєте швидкість введення","Відключаєте лише після завершення фази А"],
+   ans:1,exp:"Екстравазація — НЕГАЙНО зупиняємо інжектор. Йодовмісний контраст у м'яких тканинах може спричинити некроз. Завжди перевіряємо прохідність катетера ДО введення."},
+
+  {cat:"Якість",type:"warn",sit:"На знімку хребта видно звуження міжхребцевих щілин на периферії, але не по центру.",
+   q:"З чим це пов'язано?",
+   opts:["Реальна дископатія на периферії","Дивергенція рентгенівського пучка — на периферії похилі промені створюють ілюзію звуження","Неправильне укладання пацієнта","Завищена напруга kV"],
+   ans:1,exp:"Дивергенція пучка: лише центральний промінь перпендикулярний до касети. На периферії похилі промені імітують звуження щілин. Тому кожен відділ хребта знімають ОКРЕМО з центруванням."},
+
+  {cat:"КТ позиціонування",type:"pract",sit:"КТ, підозра на перелом хребта.",
+   q:"В якому положенні укладаєте пацієнта?",
+   opts:["Стернально (на животі)","На боці — щоб не посилити зміщення","Вентро-дорсально (на спині)","Вертикально"],
+   ans:1,exp:"Підозра на перелом хребта — ТІЛЬКИ на боці. Стернальне та вентро-дорсальне положення може посилити зміщення уламків."},
+
+  {cat:"Документація",type:"pract",sit:"Власник прийшов із направленням від лікаря іншої клініки.",
+   q:"Як вказати лікаря у дослідженні в Єноті?",
+   opts:["Вказуємо себе (техніка) як призначившого","Натискаємо зелений значок поряд з 'призначивший' — шукаємо дані лікаря або клініки","Залишаємо поле порожнім","Пишемо 'стороння клініка' в текстовому полі"],
+   ans:1,exp:"Якщо лікар з нашої клініки — вписуємо в 'призначивший'. Якщо з іншої — зелений значок поряд з 'призначивший', знаходимо і вибираємо дані лікаря або клініки."},
+
+  {cat:"Контрастна Rx",type:"warn",sit:"Власник просить рентген ШКТ з барієм. Тварина блює увесь день.",
+   q:"Що робите?",
+   opts:["Проводите — блювота не є протипоказом","Кличете лікаря — постійна блювота є протипоказом","Замінюєте барій на йогексол і проводите","Відмовляєте у дослідженні взагалі"],
+   ans:1,exp:"Постійна блювота — протипоказ для контрастного ШКТ (ризик аспірації). Кличемо лікаря. Вихід — дати протиблювотний за призначенням лікаря і лише потім розглядати дослідження."},
+
+  {cat:"МРТ укладання",type:"pract",sit:"МРТ голови кота 3 кг.",
+   q:"Яку котушку оберете і яка правильна позиція пацієнта?",
+   opts:["Спинна котушка, позиція на спині","Головна або флекс-котушка; позиція на животі, підкладаємо подушку, заповнюємо порожні простори","Будь-яка котушка, позиція довільна","Тільки флекс+спинна, позиція на боці"],
+   ans:1,exp:"Для голови використовують головну котушку або флекс (для маленьких тварин). Позиція — на животі (стернально). Підкладаємо подушку, заповнюємо порожні простори у котушці. Область дослідження — строго в центрі котушки."},
+
+  {cat:"КТ контраст",type:"pract",sit:"КТ черевної порожнини з контрастом.",
+   q:"Через скільки часу від початку введення виконується артеріальна та венозна фаза?",
+   opts:["Артеріальна — 5-10 с, венозна — 30-40 с","Артеріальна — 15-25 с, венозна — 60-90 с","Артеріальна — 60 с, венозна — 120 с","Обидві фази одночасно"],
+   ans:1,exp:"Артеріальна — 15–25 с. Венозна — 60–90 с після початку введення. Час фіксований у протоколі. Венозна — найбільш універсальна (голова, грудна клітка, живіт, кінцівки, хребет)."},
+
+  // --- В (2) правильна ---
+  {cat:"Укладання",type:"pract",sit:"Собака 8 кг, задишка, підозра на плевральний випіт. Потрібна пряма проекція.",
+   q:"Яку пряму проекцію обираєте і чому?",
+   opts:["LL (ліве латеральне) — найінформативніша","VD (на спині) — краща для легень","DV (сфінкс) — найбезпечніша при задишці","Байдуже — обидві дають однаковий результат"],
+   ans:2,exp:"DV (тварина в позиції сфінкса) — найбезпечніша при задишці. VD (на спині) тисне на грудну клітку і може погіршити стан пацієнта."},
+
+  {cat:"Параметри",type:"pract",sit:"До вас прийшов щур 250 г. Потрібна рентгенографія.",
+   q:"Які параметри для гризунів (щурів, морських свинок, фреток)?",
+   opts:["mAs 20 + kV 80","mAs 50 + kV 120","mAs 5 + kV 40","Ті самі що й для котів"],
+   ans:2,exp:"Для гризунів — mAs 5 + kV 40. Ставиться ургентна рентгенографія. Мале тіло потребує мінімальних параметрів."},
+
+  {cat:"Укладання",type:"pract",sit:"Черевна порожнина, латеральна проекція.",
+   q:"На якому боці переважно укладаєте пацієнта?",
+   opts:["На лівому боці","На животі (стернально)","На правому боці","Байдуже — обидва боки рівноцінні"],
+   ans:2,exp:"Латеральний знімок черевної порожнини — переважно на правому боці. Рівна проекція: остисті відростки видно, клубові кістки таза накладаються одна на одну."},
+
+  {cat:"Якість",type:"pract",sit:"Пряма проекція черевної порожнини. Лікар питає чи рівно укладено.",
+   q:"Як перевірити рівність прямої (VD/DV) проекції черевної порожнини?",
+   opts:["Тварина симетрична на вигляд","Шлунок чітко видно","Остисті відростки паралельні до променів, серце по центру, таз симетричний та не завалений","Обидві нирки однакового розміру"],
+   ans:2,exp:"Рівна пряма: остисті відростки паралельні до променів, серце по центру, таз симетричний та не завалений у бік."},
+
+  {cat:"Безпека",type:"warn",sit:"Собака з важкою задишкою привезена екстрено. Черговий лікар просить зробити рентген.",
+   q:"Що ви зробите в першу чергу?",
+   opts:["Одразу укладаєте на спину для VD","Робите DV і відпускаєте власника","Кличете лікаря — ургентний пацієнт, лікар повинен бути присутнім","Відмовляєтеся, поки пацієнт не стабілізований"],
+   ans:2,exp:"Ургентних пацієнтів (важко дихає, ціаноз, травми, ТЕЧА) — завжди кличемо лікаря. Технік не приймає рішення щодо маніпуляцій із критичним пацієнтом самостійно."},
+
+  {cat:"КТ контраст",type:"pract",sit:"Кіт 4 кг, КТ з контрастом.",
+   q:"Скільки фізрозчину (колба Б) готуєте?",
+   opts:["4 мл (1 мл/кг)","8 мл","10 мл — мінімум для пацієнтів < 10 кг","2 мл"],
+   ans:2,exp:"Для пацієнтів < 10 кг мінімальний фізрозчин — 10 мл, навіть якщо розрахунок дає менше. Контраст = 4 × 2 = 8 мл, фізрозчин = 10 мл."},
+
+  {cat:"Контрастна Rx",type:"pract",sit:"Контрастне дослідження ШКТ з барієм. Потрібно знати послідовність.",
+   q:"Яка правильна послідовність знімків?",
+   opts:["Лише нативні + через 1 годину","Нативні + 30 хв + 2 години","Нативні → одразу після введення → 15-30 хв → 60 хв → 2 год → 3 год → 6 год → поки контраст не дійде до прямої кишки","Лише кожні 2 години"],
+   ans:2,exp:"Послідовність: нативні → одразу після введення → 15-30 хв → 1 год → 2 год → 3 год → 6 год → до досягнення прямої кишки. Стравохід: одразу + 3-5 хвилин. У Єноті вказуємо час кожного знімка."},
+
+  {cat:"МРТ безпека",type:"warn",sit:"Власник каже: 'У мого собаки є імплантований нейростимулятор'. Прийшло направлення на МРТ.",
+   q:"Ваші дії?",
+   opts:["Проводите МРТ — нейростимулятор дозволений","Замінюєте МРТ на КТ без погодження з лікарем","Кличете лікаря МРТ — наявність імплантів потребує уточнення","Відмовляєте у дослідженні взагалі"],
+   ans:2,exp:"Будь-які імпланти, стимулятори, металеві конструкції — кличемо лікаря. Рішення приймає лікар, не технік."},
+
+  {cat:"Якість",type:"pract",sit:"Ви зробили знімок. Перед передачею лікарю перевіряєте.",
+   q:"Що обов'язково має бути вказано на знімку?",
+   opts:["Тільки ім'я тварини","Дата та час зйомки","Сторони (L/R) та коректне обрізання меж по зоні інтересу","Параметри kV та mAs"],
+   ans:2,exp:"На знімках обов'язково: вказані сторони (L/R) та виконане редагування меж по зоні інтересу. Права сторона тварини — ліворуч на знімку."},
+
+  // --- Г (3) правильна ---
+  {cat:"Укладання",type:"pract",sit:"Зроблена латеральна проекція грудної клітки. Лікар каже: 'брак'.",
+   q:"Який показник свідчить про РІВНУ латеральну проекцію грудної клітки?",
+   opts:["Лапи максимально відведені назад","Голова повернута набік","Кут між хребтом і столом 45°","Ребра одного боку накладаються на ребра іншого, остисті відростки чітко видно"],
+   ans:3,exp:"Рівна латеральна: ребра накладаються одне на одне, реберні дуги не виходять на рівень хребта, остисті відростки добре видно. Лапи відводять ВПЕРЕД, щоб не перекривали грудну клітку."},
+
+  {cat:"Параметри",type:"pract",sit:"Знімок грудної клітки вийшов занадто СВІТЛИМ — структури ледь видно, все білувате.",
+   q:"Як називається цей дефект і що треба змінити?",
+   opts:["Пересвічений (overexposed) — зменшити параметри","Артефакт руху — зменшити час","Детектор брудний — очистити","Недосвічений (underexposed) — збільшити kV або mAs"],
+   ans:3,exp:"Світлий знімок = недосвічений (underexposed) — замало дози. Треба збільшити kV або mAs. Правило: темний = пересвічений, світлий = недосвічений. Завжди багато mA!"},
+
+  {cat:"Укладання",type:"pract",sit:"VD проекція кульшових суглобів для оцінки дисплазії.",
+   q:"Яке правильне положення задніх кінцівок?",
+   opts:["Зігнуті в колінах, відведені в сторони (жабка)","Витягнуті краніально, підтягнуті до живота","Довільно — аби не рухався","Витягнуті каудально, паралельні, з медіальною ротацією в ділянці заплесна"],
+   ans:3,exp:"VD кульшів: на спині, кінцівки максимально витягнуті каудально, паралельні, притиснуті до столу в ділянці плесна/заплесна. Обов'язкова медіальна ротація в заплесна для вирівнювання суглобів."},
+
+  {cat:"Колімація",type:"pract",sit:"Готуєтеся до знімка суглоба — поле опромінення покриває весь тулуб.",
+   q:"Чому важлива правильна колімація?",
+   opts:["Для кращого вигляду знімка","Колімація не впливає на якість зображення","Заощаджує ресурс трубки","Менша ділянка = менше розсіювання = менша доза пацієнта + краща якість"],
+   ans:3,exp:"Колімація критично важлива: менша ділянка опромінення → менше розсіювання → краща якість зображення + менша доза пацієнта та персоналу. Поле = розмір зони інтересу, не детектора."},
+
+  {cat:"КТ позиціонування",type:"pract",sit:"КТ кінцівок — як грудних, так і тазових.",
+   q:"Через який протокол проводяться всі кінцівки в КТ Zoolux?",
+   opts:["Через протокол грудних кінцівок","Через протокол хребта","Через загальний протокол кінцівок","Через протокол тазових кінцівок"],
+   ans:3,exp:"В КТ Zoolux всі кінцівки проводяться через протокол тазових кінцівок — це стандарт клініки."},
+
+  {cat:"Контрастна Rx",type:"warn",sit:"На оглядовому знімку видно ознаки перфорації кишечника.",
+   q:"Який контраст ЗАБОРОНЕНО при підозрі на перфорацію?",
+   opts:["Йогексол (Омніпак)","Обидва контрасти заборонені","Жоден не заборонений","Сульфат барію — нерозчинний, спричиняє перитоніт у черевній порожнині"],
+   ans:3,exp:"Барій при перфорації — ЗАБОРОНЕНО. Нерозчинний барій у черевній порожнині → гранульоми, спайки, перитоніт. При підозрі на перфорацію — ЛИШЕ водорозчинні йодовмісні (йогексол, омніпак)."},
+
+  {cat:"Документація",type:"pract",sit:"Власник питає: 'Коли буде готовий опис?'",
+   q:"Що відповідаєте власнику?",
+   opts:["Завтра вранці","Через 2 дні","Зараз — опис вже є на диску","Протягом 12 годин — побачите у особистому кабінеті знімки разом з описом від лікаря рентгенолога"],
+   ans:3,exp:"Стандартна відповідь: 'Протягом 12 годин побачите у особистому кабінеті знімки разом з описом від лікаря рентгенолога.' Також питаємо чи потрібен диск."},
+
+  {cat:"Укладання",type:"pract",sit:"Зроблена пряма проекція грудної клітки (DV або VD). Оцінюєте якість.",
+   q:"Який показник рівної прямої проекції грудної клітки?",
+   opts:["Лапи відведені максимально вперед","Тварина лежить симетрично на вигляд","Серце знаходиться зліва","Остисті відростки паралельні до променів і виглядають як світлі точки; грудна кіста накладається на хребет"],
+   ans:3,exp:"Рівна пряма проекція: остисті відростки паралельні до променів (виглядають як точкові ділянки), анатомічне положення серця не змінене, грудна кіста накладається на хребет."},
+];
+
+let cur=0,score=0,wrongs=0,answered=false,hist=[],studentName='';
+const shuffled=[...QS].sort(()=>Math.random()-.5);
+
+function checkName(){
+  const v=document.getElementById('nameInput').value.trim();
+  document.getElementById('startBtn').disabled=v.length<2;
+}
+
+function startQuiz(){
+  studentName=document.getElementById('nameInput').value.trim();
+  if(!studentName)return;
+  document.getElementById('startScreen').style.display='none';
+  document.getElementById('qmain').style.display='block';
+  document.getElementById('nameDisplay').textContent=studentName;
+  renderQ();
+}
+
+function renderQ(){
+  const q=shuffled[cur];
+  document.getElementById('qlbl').textContent=`${cur+1} / ${shuffled.length}`;
+  document.getElementById('pfill').style.width=`${(cur/shuffled.length)*100}%`;
+  const tmap={pract:'pract',warn:'warn',err:'err'};
+  const tlbl={pract:'Практика',warn:'Увага!',err:'Типова помилка'};
+  document.getElementById('qmeta').innerHTML=`<span class="tag">${q.cat}</span><span class="tag ${tmap[q.type]}">${tlbl[q.type]}</span>`;
+  document.getElementById('sit').innerHTML=q.sit?`<div class="sit"><strong>Ситуація</strong>${q.sit}</div>`:'';
+  document.getElementById('qtxt').textContent=q.q;
+  const opts=document.getElementById('opts');
+  opts.innerHTML='';
+  ['А','Б','В','Г'].forEach((l,i)=>{
+    const b=document.createElement('button');
+    b.className='ob';
+    b.innerHTML=`<span class="ol">${l}</span><span>${q.opts[i]}</span>`;
+    b.onclick=()=>pick(i);
+    opts.appendChild(b);
+  });
+  document.getElementById('fb').className='fb';
+  document.getElementById('nbtn').style.display='none';
+  answered=false;
+}
+
+function pick(i){
+  if(answered)return;
+  answered=true;
+  const q=shuffled[cur];
+  const btns=document.querySelectorAll('.ob');
+  btns.forEach(b=>b.disabled=true);
+  btns[q.ans].classList.add('ok');
+  const ok=i===q.ans;
+  if(ok)score++;else{btns[i].classList.add('bad');wrongs++;}
+  hist.push({q:q.q,given:i,ans:q.ans,opts:q.opts,exp:q.exp,ok});
+  document.getElementById('stot').textContent=cur+1;
+  document.getElementById('sok').textContent=score;
+  document.getElementById('sbad').textContent=wrongs;
+  const fb=document.getElementById('fb');
+  fb.className=`fb show ${ok?'ok-fb':'bad-fb'}`;
+  fb.textContent=ok?`✓ Правильно! ${q.exp}`:`✗ Неправильно. ${q.exp}`;
+  document.getElementById('nbtn').style.display='block';
+}
+
+function nextQ(){
+  if(cur<shuffled.length-1){cur++;renderQ();}
+  else showResult();
+}
+
+function showResult(){
+  document.getElementById('qmain').style.display='none';
+  const rs=document.getElementById('res');
+  rs.className='res show';
+  const total=shuffled.length;
+  const pct=Math.round((score/total)*100);
+  document.getElementById('rpct').textContent=pct+'%';
+  document.getElementById('rok').textContent=score;
+  document.getElementById('rbad').textContent=wrongs;
+  document.getElementById('rtot').textContent=total;
+  const titles=[
+    [90,'Відмінно!','Готові до самостійної роботи.'],
+    [75,'Добре','Є кілька прогалин — зверніть увагу на помилки нижче.'],
+    [60,'Задовільно','Рекомендовано повторити розбір укладань та протоколів.'],
+    [0,'Потрібне доопрацювання','Перегляньте лекції та спробуйте знову.']
+  ];
+  const [,t,s]=titles.find(([min])=>pct>=min);
+  document.getElementById('rtitle').textContent=t;
+  document.getElementById('rsub').textContent=studentName+' · '+s;
+  sendToSheets(studentName,score,total,pct);
+  const rv=document.getElementById('rvlist');
+  const mistakes=hist.filter(h=>!h.ok);
+  if(!mistakes.length){rv.innerHTML='<div style="font-size:13px;color:#0F6E56;padding:.75rem 0">Усі відповіді правильні! 🎉</div>';return;}
+  rv.innerHTML='<div class="rvhdr">Розбір помилок</div>';
+  mistakes.forEach(h=>{
+    const d=document.createElement('div');
+    d.className='rvi';
+    d.innerHTML=`<div class="rvq">${h.q}</div>
+      <div class="rva r">✗ Ваша відповідь: ${h.opts[h.given]}</div>
+      <div class="rvca">✓ Правильно: ${h.opts[h.ans]}</div>
+      <div class="rvex">${h.exp}</div>`;
+    rv.appendChild(d);
+  });
+}
+
+function sendToSheets(name,correct,total,pct){
+  const st=document.getElementById('sendStatus');
+  if(!SCRIPT_URL||SCRIPT_URL.includes('ВСТАВТЕ')){
+    st.className='send-status failed';
+    st.textContent='⚠ Посилання на Google Sheets не налаштовано.';
+    return;
+  }
+  st.className='send-status sending';
+  st.textContent='⏳ Зберігаємо результат...';
+  const now=new Date();
+  const dateStr=now.toLocaleDateString('uk-UA')+' '+now.toLocaleTimeString('uk-UA',{hour:'2-digit',minute:'2-digit'});
+  const params=new URLSearchParams({name,correct,total,pct,date:dateStr});
+  fetch(SCRIPT_URL+'?'+params.toString(),{method:'GET',mode:'no-cors'})
+    .then(()=>{st.className='send-status sent';st.textContent='✓ Результат збережено у таблиці викладача.';})
+    .catch(()=>{st.className='send-status failed';st.textContent='✗ Не вдалося зберегти. Перевірте підключення.';});
+}
+
+function restart(){
+  cur=0;score=0;wrongs=0;answered=false;hist=[];
+  shuffled.sort(()=>Math.random()-.5);
+  ['stot','sok','sbad'].forEach(id=>document.getElementById(id).textContent=0);
+  document.getElementById('res').className='res';
+  document.getElementById('startScreen').style.display='block';
+  document.getElementById('nameInput').value='';
+  document.getElementById('startBtn').disabled=true;
+}
+</script>
+</body>
+</html>
